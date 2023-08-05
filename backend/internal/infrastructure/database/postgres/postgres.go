@@ -26,10 +26,22 @@ func NewPostgreSQLDB(connectionString string) (*PostgreSQLDB, error) {
 	return &PostgreSQLDB{db: db}, nil
 }
 
+func (p *PostgreSQLDB) Close() error {
+	return p.db.Close()
+}
+
+func (p *PostgreSQLDB) DB() *sql.DB {
+	return p.db
+}
+
 func (p *PostgreSQLDB) UserRepo() repository.UserRepository {
 	return NewPostgresUserRepository(p.db)
 }
 
 func (p *PostgreSQLDB) SchoolRepo() repository.SchoolRepository {
 	return NewPostgresSchoolRepository(p.db)
+}
+
+func (p *PostgreSQLDB) AdminRepo() repository.AdminRepository {
+	return NewPostgresAdminRepository(p.db)
 }
