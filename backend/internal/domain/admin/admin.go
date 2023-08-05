@@ -4,8 +4,8 @@ import (
 	"time"
 )
 
-// User represents a user entity
-type User struct {
+// Admin represents a user entity
+type Admin struct {
 	ID        int
 	Email     string
 	Password  string // This should be a hashed password
@@ -13,9 +13,9 @@ type User struct {
 	UpdatedAt time.Time
 }
 
-// NewUser creates a new User instance
-func NewUser(email, password string, isAdmin bool) *User {
-	return &User{
+// NewUser creates a new Admin instance
+func NewAdmin(email, password string, isAdmin bool) *Admin {
+	return &Admin{
 		Email:     email,
 		Password:  password,
 		CreatedAt: time.Now(),

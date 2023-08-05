@@ -1,11 +1,9 @@
-// internal/infrastructure/database/postgres/school_repository.go
-
 package postgres
 
 import (
 	"database/sql"
 
-	"github.com/k61b/okul/internal/domain"
+	domain "github.com/k61b/okul/internal/domain/school"
 	"github.com/k61b/okul/internal/infrastructure/repository"
 )
 
