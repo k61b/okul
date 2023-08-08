@@ -1,0 +1,9 @@
+server:
+  port: "8080"
+
+database:
+  host: "localhost"
+  port: "5432"
+  user: "dev_user"
+  password: "dev_pass"
+  name: "dev_db"
