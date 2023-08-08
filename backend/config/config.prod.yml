@@ -1,0 +1,9 @@
+server:
+  port: "80"
+
+database:
+  host: "prod-db-host"
+  port: "5432"
+  user: "prod_user"
+  password: "prod_pass"
+  name: "prod_db"

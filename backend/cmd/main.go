@@ -17,13 +17,23 @@ import (
 
 func main() {
 	// Load configuration
-	cfg, err := config.LoadConfig()
+	cfg, err := config.LoadConfig("dev") // Adjust the environment ("dev", "prod", etc.) as needed
 	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
 	}
 
+	// Construct PostgreSQL database connection string
+	dbConnectionString := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		cfg.Database.Host,
+		cfg.Database.Port,
+		cfg.Database.User,
+		cfg.Database.Password,
+		cfg.Database.Name,
+	)
+
 	// Initialize PostgreSQL database
-	db, err := postgres.NewPostgreSQLDB(cfg.GetString("database.connection_string"))
+	db, err := postgres.NewPostgreSQLDB(dbConnectionString)
 	if err != nil {
 		log.Fatal("Error connecting to the database:", err)
 	}
@@ -57,7 +67,6 @@ func main() {
 	routes.SetupUserRoutes(app, userHandlers)
 
 	// Start the Fiber app
-	port := cfg.GetInt("server.port")
-	fmt.Printf("Server is running on port %d\n", port)
-	app.Listen(fmt.Sprintf(":%d", port))
+	fmt.Printf("Server is running on port %s\n", cfg.Server.Port)
+	app.Listen(fmt.Sprintf(":%s", cfg.Server.Port))
 }
