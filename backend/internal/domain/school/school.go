@@ -28,3 +28,43 @@ func NewSchool(name, address string, ownerID int) *School {
 		UpdatedAt: time.Now(),
 	}
 }
+
+// Approve approves the school
+func (s *School) Approve() {
+	s.Approved = true
+	s.UpdatedAt = time.Now()
+}
+
+// Suspend suspends the school
+func (s *School) Suspend() {
+	s.Suspended = true
+	s.UpdatedAt = time.Now()
+}
+
+// Resume resumes the school
+func (s *School) Resume() {
+	s.Suspended = false
+	s.UpdatedAt = time.Now()
+}
+
+// IsApproved returns true if the school is approved
+func (s *School) IsApproved() bool {
+	return s.Approved
+}
+
+// IsSuspended returns true if the school is suspended
+func (s *School) IsSuspended() bool {
+	return s.Suspended
+}
+
+// UpdateName updates the school's name
+func (s *School) UpdateName(name string) {
+	s.Name = name
+	s.UpdatedAt = time.Now()
+}
+
+// UpdateAddress updates the school's address
+func (s *School) UpdateAddress(address string) {
+	s.Address = address
+	s.UpdatedAt = time.Now()
+}

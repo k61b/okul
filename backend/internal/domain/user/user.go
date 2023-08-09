@@ -6,19 +6,28 @@ import (
 
 // User represents a user entity
 type User struct {
-	ID        int
-	Email     string
-	Password  string // This should be a hashed password
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID           int
+	Email        string
+	PasswordHash string
+	Name         string
+	Surname      string
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 // NewUser creates a new User instance
-func NewUser(email, password string, isAdmin bool) *User {
+func NewUser(email, passwordHash, name, surname string) *User {
 	return &User{
-		Email:     email,
-		Password:  password,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Email:        email,
+		PasswordHash: passwordHash,
+		Name:         name,
+		Surname:      surname,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
 	}
+}
+
+// GetFullName returns the user's full name
+func (u *User) GetFullName() string {
+	return u.Name + " " + u.Surname
 }
