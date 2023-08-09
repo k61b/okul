@@ -41,7 +41,3 @@ func (p *PostgreSQLDB) UserRepo() repository.UserRepository {
 func (p *PostgreSQLDB) SchoolRepo() repository.SchoolRepository {
 	return NewPostgresSchoolRepository(p.db)
 }
-
-func (p *PostgreSQLDB) AdminRepo() repository.AdminRepository {
-	return NewPostgresAdminRepository(p.db)
-}

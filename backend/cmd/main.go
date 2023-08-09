@@ -6,7 +6,6 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/k61b/okul/config"
-	"github.com/k61b/okul/internal/application/adminservice"
 	"github.com/k61b/okul/internal/application/schoolservice"
 	"github.com/k61b/okul/internal/application/userservice"
 	"github.com/k61b/okul/internal/infrastructure/database/postgres"
@@ -42,12 +41,10 @@ func main() {
 	// Initialize repositories
 	userRepo := postgres.NewPostgresUserRepository(db.DB())
 	schoolRepo := postgres.NewPostgresSchoolRepository(db.DB())
-	adminRepo := postgres.NewPostgresAdminRepository(db.DB()) // Implement this
 
 	// Initialize application services
 	userService := userservice.NewUserService(userRepo)
 	schoolService := schoolservice.NewSchoolService(schoolRepo)
-	adminService := adminservice.NewAdminService(adminRepo) // Implement this
 
 	// Initialize Fiber app
 	app := fiber.New()
@@ -57,12 +54,10 @@ func main() {
 	app.Use(middleware.CORSMiddleware)
 
 	// Initialize handlers
-	adminHandlers := handlers.NewAdminHandlers(adminService)
 	schoolHandlers := handlers.NewSchoolHandlers(schoolService)
 	userHandlers := handlers.NewUserHandlers(userService)
 
 	// Initialize routes
-	routes.SetupAdminRoutes(app, adminHandlers)
 	routes.SetupSchoolRoutes(app, schoolHandlers)
 	routes.SetupUserRoutes(app, userHandlers)
 
