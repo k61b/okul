@@ -4,21 +4,26 @@ import (
 	"time"
 )
 
-// Admin represents a user entity
+// Admin represents an admin entity
 type Admin struct {
-	ID        int
-	Email     string
-	Password  string // This should be a hashed password
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID           int
+	Email        string
+	PasswordHash string
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
-// NewUser creates a new Admin instance
-func NewAdmin(email, password string, isAdmin bool) *Admin {
+// NewAdmin creates a new Admin instance
+func NewAdmin(email, passwordHash string) *Admin {
 	return &Admin{
-		Email:     email,
-		Password:  password,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Email:        email,
+		PasswordHash: passwordHash,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
 	}
+}
+
+// GetEmail returns the admin's email
+func (a *Admin) GetEmail() string {
+	return a.Email
 }
