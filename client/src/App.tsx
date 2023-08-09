@@ -1,4 +1,4 @@
-import ButtonWithIcon from './components/Dashboard/ui/buttons/ButtonWithIcon '
+import ButtonWithIcon from './components/Dashboard/ui/buttons/ButtonWithIcon'
 import TextButton from './components/Dashboard/ui/buttons/TextButton'
 import WrappedButton from './components/Dashboard/ui/buttons/WrappedButton'
 import { MdOutlineFavoriteBorder } from 'react-icons/md'
