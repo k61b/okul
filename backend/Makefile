@@ -1,5 +1,5 @@
 build:
-	@go build -o bin/okul
+	@go build -o bin/okul cmd/main.go
 
 run: build
 	@./bin/okul
