@@ -12,6 +12,6 @@ func SetupUserRoutes(app *fiber.App, userHandlers *handlers.UserHandlers) {
 	user.Use(middleware.AuthMiddleware)
 	// Add any other middleware specific to users
 
-	user.Post("/", userHandlers.CreateUserHandler)
+	user.Post("/", userHandlers.SessionHandler)
 	// Define more user routes here
 }

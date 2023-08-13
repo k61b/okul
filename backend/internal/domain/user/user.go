@@ -1,33 +1,73 @@
 package domain
 
 import (
+	"log"
 	"time"
+
+	"golang.org/x/crypto/bcrypt"
+
+	"github.com/golang-jwt/jwt"
+
+	"github.com/k61b/okul/config"
 )
 
 // User represents a user entity
 type User struct {
-	ID           int
-	Email        string
-	PasswordHash string
-	Name         string
-	Surname      string
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	ID        int
+	Email     string
+	Password  string
+	Name      string
+	Surname   string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 // NewUser creates a new User instance
-func NewUser(email, passwordHash, name, surname string) *User {
+func NewUser(email, password, name, surname string) *User {
 	return &User{
-		Email:        email,
-		PasswordHash: passwordHash,
-		Name:         name,
-		Surname:      surname,
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
+		Email:     email,
+		Password:  password,
+		Name:      name,
+		Surname:   surname,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
 	}
 }
 
 // GetFullName returns the user's full name
 func (u *User) GetFullName() string {
 	return u.Name + " " + u.Surname
+}
+
+// HashPassword hashes the password using bcrypt
+func HashPassword(password string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	return string(hash), err
+}
+
+// CheckPassword checks if the password is correct
+func CheckPassword(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
+// Create JWT token
+func GenerateJWTToken(email string) (string, error) {
+	cfg, err := config.LoadConfig("dev")
+	if err != nil {
+		log.Fatalf("Error loading config: %v", err)
+	}
+
+	secret := cfg.Utils.JWT_Secret
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"email": email,
+	})
+
+	tokenString, err := token.SignedString([]byte(secret))
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }

@@ -6,26 +6,39 @@ import (
 	domain "github.com/k61b/okul/internal/domain/user"
 )
 
-// UserRepository represents the repository interface for the User entity
 type UserRepository interface {
 	Create(user *domain.User) error
 	GetByID(id int) (*domain.User, error)
 	GetByEmail(email string) (*domain.User, error)
 }
 
-// PostgresUserRepository represents the PostgreSQL repository implementation for the User entity
 type PostgresUserRepository struct {
 	db *sql.DB
 }
 
-// NewPostgresUserRepository creates a new instance of PostgresUserRepository
 func NewPostgresUserRepository(db *sql.DB) *PostgresUserRepository {
 	return &PostgresUserRepository{db: db}
 }
 
-// Create creates a new user record in the database
 func (r *PostgresUserRepository) Create(user *domain.User) error {
-	// Implement the database insertion logic here
+	query := `
+		INSERT INTO users (email, password_hash, name, surname, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id
+	`
+
+	err := r.db.QueryRow(
+		query,
+		user.Email,
+		user.Password,
+		user.Name,
+		user.Surname,
+		user.CreatedAt,
+		user.UpdatedAt,
+	).Scan(&user.ID)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -35,8 +48,28 @@ func (r *PostgresUserRepository) GetByID(id int) (*domain.User, error) {
 	return nil, nil
 }
 
-// GetByEmail retrieves a user by email from the database
 func (r *PostgresUserRepository) GetByEmail(email string) (*domain.User, error) {
-	// Implement the database retrieval logic here
-	return nil, nil
+	query := `
+        SELECT id, email, password_hash, name, surname, created_at, updated_at
+        FROM users
+        WHERE email = $1
+    `
+	user := &domain.User{}
+
+	err := r.db.QueryRow(query, email).Scan(
+		&user.ID,
+		&user.Email,
+		&user.Password,
+		&user.Name,
+		&user.Surname,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return user, nil
 }

@@ -3,8 +3,8 @@ package postgres
 import (
 	"database/sql"
 
-	"github.com/k61b/okul/internal/infrastructure/repository"
-	_ "github.com/lib/pq" // Import the PostgreSQL driver
+	repository "github.com/k61b/okul/internal/infrastructure/repository"
+	_ "github.com/lib/pq"
 )
 
 type PostgreSQLDB struct {
@@ -35,9 +35,9 @@ func (p *PostgreSQLDB) DB() *sql.DB {
 }
 
 func (p *PostgreSQLDB) UserRepo() repository.UserRepository {
-	return NewPostgresUserRepository(p.db)
+	return repository.NewPostgresUserRepository(p.db)
 }
 
 func (p *PostgreSQLDB) SchoolRepo() repository.SchoolRepository {
-	return NewPostgresSchoolRepository(p.db)
+	return repository.NewPostgresSchoolRepository(p.db)
 }
