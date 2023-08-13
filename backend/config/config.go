@@ -6,18 +6,16 @@ import (
 	"github.com/spf13/viper"
 )
 
-// Config represents the application configuration.
 type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
 	Database DatabaseConfig `mapstructure:"database"`
+	Utils    UtilsConfig    `mapstructure:"utils"`
 }
 
-// ServerConfig represents the server configuration.
 type ServerConfig struct {
 	Port string `mapstructure:"port"`
 }
 
-// DatabaseConfig represents the database configuration.
 type DatabaseConfig struct {
 	Host     string `mapstructure:"host"`
 	Port     string `mapstructure:"port"`
@@ -26,7 +24,10 @@ type DatabaseConfig struct {
 	Name     string `mapstructure:"name"`
 }
 
-// LoadConfig loads the application configuration based on the environment.
+type UtilsConfig struct {
+	JWT_Secret string `mapstructure:"jwt_secret"`
+}
+
 func LoadConfig(env string) (*Config, error) {
 	cfg := viper.New()
 
@@ -47,10 +48,8 @@ func LoadConfig(env string) (*Config, error) {
 		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
 	}
 
-	// Apply environment-specific overrides
 	ApplyEnvironmentOverrides(&config, env)
 
-	// Validate the configuration
 	err = ValidateConfig(&config)
 	if err != nil {
 		return nil, fmt.Errorf("invalid config: %w", err)
@@ -59,7 +58,6 @@ func LoadConfig(env string) (*Config, error) {
 	return &config, nil
 }
 
-// ApplyEnvironmentOverrides applies environment-specific overrides to the configuration.
 func ApplyEnvironmentOverrides(cfg *Config, env string) {
 	switch env {
 	case "dev":
@@ -71,7 +69,6 @@ func ApplyEnvironmentOverrides(cfg *Config, env string) {
 	}
 }
 
-// ValidateConfig validates the configuration for any missing or invalid values.
 func ValidateConfig(cfg *Config) error {
 	if cfg.Server.Port == "" {
 		return fmt.Errorf("server port is missing")
@@ -79,6 +76,6 @@ func ValidateConfig(cfg *Config) error {
 	if cfg.Database.Host == "" {
 		return fmt.Errorf("database host is missing")
 	}
-	// Add more validation checks for other configuration fields if needed
+
 	return nil
 }

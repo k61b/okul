@@ -1,6 +1,7 @@
 package userservice
 
 import (
+	domain "github.com/k61b/okul/internal/domain/user"
 	"github.com/k61b/okul/internal/infrastructure/repository"
 )
 
@@ -12,5 +13,22 @@ func NewUserService(userRepo repository.UserRepository) *UserService {
 	return &UserService{userRepo: userRepo}
 }
 
-// Implement methods for user-related actions here
-// For example: CreateUser, GetUserByID, UpdateUser, DeleteUser, etc.
+func (s *UserService) CreateUser(email, password, name, surname string) (*domain.User, error) {
+	user := domain.NewUser(email, password, name, surname)
+
+	err := s.userRepo.Create(user)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (s *UserService) GetByEmail(email string) (*domain.User, error) {
+	user, err := s.userRepo.GetByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}

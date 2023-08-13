@@ -9,6 +9,7 @@ import (
 	"github.com/k61b/okul/internal/application/schoolservice"
 	"github.com/k61b/okul/internal/application/userservice"
 	"github.com/k61b/okul/internal/infrastructure/database/postgres"
+	"github.com/k61b/okul/internal/infrastructure/repository"
 	"github.com/k61b/okul/web/api/handlers"
 	"github.com/k61b/okul/web/api/middleware"
 	"github.com/k61b/okul/web/api/routes"
@@ -39,8 +40,8 @@ func main() {
 	defer db.Close()
 
 	// Initialize repositories
-	userRepo := postgres.NewPostgresUserRepository(db.DB())
-	schoolRepo := postgres.NewPostgresSchoolRepository(db.DB())
+	userRepo := repository.NewPostgresUserRepository(db.DB())
+	schoolRepo := repository.NewPostgresSchoolRepository(db.DB())
 
 	// Initialize application services
 	userService := userservice.NewUserService(userRepo)

@@ -7,3 +7,6 @@ database:
   user: "prod_user"
   password: "prod_pass"
   name: "prod_db"
+
+utils:
+  jwt_secret: "mySecret"
