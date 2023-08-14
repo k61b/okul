@@ -6,6 +6,8 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
+	"github.com/gofiber/fiber/v2"
+
 	"github.com/golang-jwt/jwt"
 
 	"github.com/k61b/okul/config"
@@ -70,4 +72,15 @@ func GenerateJWTToken(email string) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+// Create Cookie
+func GenerateCookie(token string) *fiber.Cookie {
+	return &fiber.Cookie{
+		Name:     "token",
+		Value:    token,
+		Path:     "/",
+		Expires:  time.Now().Add(24 * time.Hour),
+		HTTPOnly: true,
+	}
 }

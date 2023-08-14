@@ -1,8 +1,6 @@
 package handlers
 
 import (
-	"time"
-
 	"github.com/gofiber/fiber/v2"
 	"github.com/k61b/okul/internal/application/userservice"
 	domain "github.com/k61b/okul/internal/domain/user"
@@ -50,13 +48,12 @@ func (h *UserHandlers) SessionHandler(c *fiber.Ctx) error {
 		return err
 	}
 
-	cookie := fiber.Cookie{
-		Name:    "token",
-		Value:   token,
-		Path:    "/",
-		Expires: time.Now().Add(24 * time.Hour),
-	}
-	c.Cookie(&cookie)
+	c.Cookie(domain.GenerateCookie(token))
 
 	return c.JSON(fiber.Map{"token": token})
+}
+
+func (h *UserHandlers) LogoutHandler(c *fiber.Ctx) error {
+	c.Cookie(domain.GenerateCookie(""))
+	return c.JSON(fiber.Map{"message": "success"})
 }
