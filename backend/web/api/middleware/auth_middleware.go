@@ -2,13 +2,17 @@ package middleware
 
 import (
 	"github.com/gofiber/fiber/v2"
+	domain "github.com/k61b/okul/internal/domain/user"
 )
 
 func AuthMiddleware(c *fiber.Ctx) error {
-	// Implement your authentication logic here
-	// For example, you can check JWT tokens, session cookies, etc.
-	// If authentication fails, return an appropriate response (e.g., 401 Unauthorized)
+	token := c.Cookies("token")
 
-	// If authentication succeeds, proceed to the next middleware or handler
+	if _, err := domain.ParseToken(token); err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+			"message": "Unauthorized",
+		})
+	}
+
 	return c.Next()
 }

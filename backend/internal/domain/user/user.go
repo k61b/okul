@@ -74,6 +74,20 @@ func GenerateJWTToken(email string) (string, error) {
 	return tokenString, nil
 }
 
+// Parse JWT token
+func ParseToken(token string) (*jwt.Token, error) {
+	cfg, err := config.LoadConfig("dev")
+	if err != nil {
+		log.Fatalf("Error loading config: %v", err)
+	}
+
+	secret := cfg.Utils.JWT_Secret
+
+	return jwt.Parse(token, func(token *jwt.Token) (interface{}, error) {
+		return []byte(secret), nil
+	})
+}
+
 // Create Cookie
 func GenerateCookie(token string) *fiber.Cookie {
 	return &fiber.Cookie{
