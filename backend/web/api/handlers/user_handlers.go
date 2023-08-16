@@ -57,3 +57,21 @@ func (h *UserHandlers) LogoutHandler(c *fiber.Ctx) error {
 	c.Cookie(domain.GenerateCookie(""))
 	return c.JSON(fiber.Map{"message": "success"})
 }
+
+func (h *UserHandlers) MeHandler(c *fiber.Ctx) error {
+	token := c.Cookies("token")
+
+	email, err := domain.GetEmailFromToken(token)
+	if err != nil {
+		return err
+	}
+
+	user, err := h.userService.GetByEmail(email)
+	if err != nil {
+		return err
+	}
+
+	user.Password = "***"
+
+	return c.JSON(user)
+}
