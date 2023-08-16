@@ -78,6 +78,34 @@ func (h *UserHandlers) MeHandler(c *fiber.Ctx) error {
 	return c.JSON(user)
 }
 
+func (h *UserHandlers) UpdateHandler(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return err
+	}
+
+	var u domain.User
+	if err := c.BodyParser(&u); err != nil {
+		return err
+	}
+
+	user, err := h.userService.GetByID(id)
+	if err != nil {
+		return err
+	}
+
+	u.ID = user.ID
+	u.Email = user.Email
+	u.Password = user.Password
+
+	updatedUser, err := h.userService.Update(&u)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(updatedUser)
+}
+
 func (h *UserHandlers) DeleteHandler(c *fiber.Ctx) error {
 	id, err := strconv.Atoi(c.Params("id"))
 	if err != nil {

@@ -10,6 +10,7 @@ type UserRepository interface {
 	Create(user *domain.User) error
 	GetByID(id int) (*domain.User, error)
 	GetByEmail(email string) (*domain.User, error)
+	Update(user *domain.User) error
 	Delete(id int) error
 }
 
@@ -43,10 +44,30 @@ func (r *PostgresUserRepository) Create(user *domain.User) error {
 	return nil
 }
 
-// GetByID retrieves a user by ID from the database
 func (r *PostgresUserRepository) GetByID(id int) (*domain.User, error) {
-	// Implement the database retrieval logic here
-	return nil, nil
+	query := `
+		SELECT id, email, password_hash, name, surname, created_at, updated_at
+		FROM users
+		WHERE id = $1
+	`
+	user := &domain.User{}
+
+	err := r.db.QueryRow(query, id).Scan(
+		&user.ID,
+		&user.Email,
+		&user.Password,
+		&user.Name,
+		&user.Surname,
+		&user.CreatedAt,
+		&user.UpdatedAt,
+	)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+	return user, nil
 }
 
 func (r *PostgresUserRepository) GetByEmail(email string) (*domain.User, error) {
@@ -73,6 +94,26 @@ func (r *PostgresUserRepository) GetByEmail(email string) (*domain.User, error) 
 		return nil, err
 	}
 	return user, nil
+}
+
+func (r *PostgresUserRepository) Update(user *domain.User) error {
+	query := `
+		UPDATE users
+		SET name = $1, surname = $2, updated_at = $3
+		WHERE id = $4
+	`
+
+	_, err := r.db.Exec(
+		query,
+		user.Name,
+		user.Surname,
+		user.UpdatedAt,
+		user.ID,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (r *PostgresUserRepository) Delete(id int) error {
