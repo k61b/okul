@@ -3,6 +3,14 @@ import TextButton from './components/Dashboard/ui/buttons/TextButton'
 import WrappedButton from './components/Dashboard/ui/buttons/WrappedButton'
 import { MdOutlineFavoriteBorder } from 'react-icons/md'
 import { BsInstagram, BsTwitter } from 'react-icons/bs'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from './components/ui/card'
 
 function App() {
   return (
@@ -30,6 +38,19 @@ function App() {
       />
 
       <TextButton label="Show On Map" />
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Card Title</CardTitle>
+          <CardDescription>Card Description</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p>Card Content</p>
+        </CardContent>
+        <CardFooter>
+          <p>Card Footer</p>
+        </CardFooter>
+      </Card>
     </div>
   )
 }
