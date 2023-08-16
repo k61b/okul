@@ -10,6 +10,7 @@ type UserRepository interface {
 	Create(user *domain.User) error
 	GetByID(id int) (*domain.User, error)
 	GetByEmail(email string) (*domain.User, error)
+	Delete(id int) error
 }
 
 type PostgresUserRepository struct {
@@ -72,4 +73,17 @@ func (r *PostgresUserRepository) GetByEmail(email string) (*domain.User, error) 
 		return nil, err
 	}
 	return user, nil
+}
+
+func (r *PostgresUserRepository) Delete(id int) error {
+	query := `
+		DELETE FROM users
+		WHERE id = $1
+	`
+
+	_, err := r.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }

@@ -13,4 +13,6 @@ func SetupUserRoutes(app *fiber.App, userHandlers *handlers.UserHandlers) {
 	user.Post("/logout", userHandlers.LogoutHandler)
 
 	user.Get("/me", middleware.AuthMiddleware, userHandlers.MeHandler)
+
+	user.Delete("/:id", middleware.AuthMiddleware, userHandlers.DeleteHandler)
 }

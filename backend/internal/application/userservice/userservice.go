@@ -32,3 +32,12 @@ func (s *UserService) GetByEmail(email string) (*domain.User, error) {
 
 	return user, nil
 }
+
+func (s *UserService) Delete(id int) error {
+	err := s.userRepo.Delete(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"strconv"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/k61b/okul/internal/application/userservice"
 	domain "github.com/k61b/okul/internal/domain/user"
@@ -74,4 +76,17 @@ func (h *UserHandlers) MeHandler(c *fiber.Ctx) error {
 	user.Password = "***"
 
 	return c.JSON(user)
+}
+
+func (h *UserHandlers) DeleteHandler(c *fiber.Ctx) error {
+	id, err := strconv.Atoi(c.Params("id"))
+	if err != nil {
+		return err
+	}
+
+	if err := h.userService.Delete(id); err != nil {
+		return err
+	}
+
+	return c.JSON(fiber.Map{"message": "success"})
 }
