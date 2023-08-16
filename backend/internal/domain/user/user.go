@@ -98,3 +98,15 @@ func GenerateCookie(token string) *fiber.Cookie {
 		HTTPOnly: true,
 	}
 }
+
+// Get Email from JWT token
+func GetEmailFromToken(token string) (string, error) {
+	parsedToken, err := ParseToken(token)
+	if err != nil {
+		return "", err
+	}
+
+	claims := parsedToken.Claims.(jwt.MapClaims)
+
+	return claims["email"].(string), nil
+}
