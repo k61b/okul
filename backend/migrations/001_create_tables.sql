@@ -19,3 +19,13 @@ CREATE TABLE IF NOT EXISTS schools (
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Create the 'verification_tokens' table
+CREATE TABLE IF NOT EXISTS verification_tokens (
+    id SERIAL PRIMARY KEY,
+    email VARCHAR(255) NOT NULL,
+    token VARCHAR(255) NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);

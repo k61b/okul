@@ -25,7 +25,8 @@ type DatabaseConfig struct {
 }
 
 type UtilsConfig struct {
-	JWT_Secret string `mapstructure:"jwt_secret"`
+	JWT_Secret        string `mapstructure:"jwt_secret"`
+	JWT_TokenDuration int    `mapstructure:"jwt_token_duration"`
 }
 
 func LoadConfig(env string) (*Config, error) {

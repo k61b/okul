@@ -10,3 +10,4 @@ database:
 
 utils:
   jwt_secret: "mySecret"
+  jwt_token_duration: "24h"

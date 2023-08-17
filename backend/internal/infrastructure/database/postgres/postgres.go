@@ -41,3 +41,7 @@ func (p *PostgreSQLDB) UserRepo() repository.UserRepository {
 func (p *PostgreSQLDB) SchoolRepo() repository.SchoolRepository {
 	return repository.NewPostgresSchoolRepository(p.db)
 }
+
+func (p *PostgreSQLDB) VerificationRepo() repository.VerificationRepository {
+	return repository.NewPostgresVerificationRepository(p.db)
+}
