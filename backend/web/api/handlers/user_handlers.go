@@ -96,6 +96,7 @@ func (h *UserHandlers) UpdateHandler(c *fiber.Ctx) error {
 
 	u.ID = user.ID
 	u.Email = user.Email
+	u.IsEmailVerified = user.IsEmailVerified
 	u.Password = user.Password
 
 	updatedUser, err := h.userService.Update(&u)
