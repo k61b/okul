@@ -25,7 +25,7 @@ func NewVerification(email string, token string, expiresAt time.Time) *Verificat
 	}
 }
 
-func (v *Verification) GenerateVerificationToken() (string, error) {
+func GenerateVerificationToken(email string) (string, error) {
 	cfg, err := config.LoadConfig("dev")
 	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
@@ -35,7 +35,7 @@ func (v *Verification) GenerateVerificationToken() (string, error) {
 	tokenDuration := cfg.Utils.JWT_TokenDuration
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"email": v.email,
+		"email": email,
 		"exp":   time.Now().Add(time.Hour * time.Duration(tokenDuration)).Unix(),
 	})
 

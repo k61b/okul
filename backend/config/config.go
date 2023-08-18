@@ -10,10 +10,12 @@ type Config struct {
 	Server   ServerConfig   `mapstructure:"server"`
 	Database DatabaseConfig `mapstructure:"database"`
 	Utils    UtilsConfig    `mapstructure:"utils"`
+	Email    EmailConfig    `mapstructure:"email"`
 }
 
 type ServerConfig struct {
-	Port string `mapstructure:"port"`
+	Port     string `mapstructure:"port"`
+	Base_Url string `mapstructure:"base_url"`
 }
 
 type DatabaseConfig struct {
@@ -27,6 +29,14 @@ type DatabaseConfig struct {
 type UtilsConfig struct {
 	JWT_Secret        string `mapstructure:"jwt_secret"`
 	JWT_TokenDuration int    `mapstructure:"jwt_token_duration"`
+}
+
+type EmailConfig struct {
+	Email_Sender string `mapstructure:"email_sender"`
+	Host         string `mapstructure:"host"`
+	Port         int    `mapstructure:"port"`
+	User         string `mapstructure:"user"`
+	Password     string `mapstructure:"password"`
 }
 
 func LoadConfig(env string) (*Config, error) {

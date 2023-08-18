@@ -38,11 +38,6 @@ func NewUser(email, password, name, surname string) *User {
 	}
 }
 
-// GetFullName returns the user's full name
-func (u *User) GetFullName() string {
-	return u.Name + " " + u.Surname
-}
-
 // HashPassword hashes the password using bcrypt
 func HashPassword(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
