@@ -14,15 +14,15 @@ import (
 	verificationDomain "github.com/k61b/okul/internal/domain/verification"
 )
 
-type VerificationHandler struct {
+type EmailHandlers struct {
 	dialer *gomail.Dialer
 }
 
-func NewEmailHandler(dialer *gomail.Dialer) *VerificationHandler {
-	return &VerificationHandler{dialer: dialer}
+func NewEmailHandler(dialer *gomail.Dialer) *EmailHandlers {
+	return &EmailHandlers{dialer: dialer}
 }
 
-func (h *VerificationHandler) SendVerificationEmailHandler(to string, token string) error {
+func (h *EmailHandlers) SendVerificationEmailHandler(to string, token string) error {
 	cfg, err := config.LoadConfig("dev")
 	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
@@ -47,7 +47,7 @@ func (h *VerificationHandler) SendVerificationEmailHandler(to string, token stri
 	return nil
 }
 
-func (h *VerificationHandler) SendVerificationEmailAndStoreTokenHandler(c *fiber.Ctx) error {
+func (h *EmailHandlers) SendVerificationEmailAndStoreTokenHandler(c *fiber.Ctx) error {
 	cfg, err := config.LoadConfig("dev")
 	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
@@ -71,7 +71,7 @@ func (h *VerificationHandler) SendVerificationEmailAndStoreTokenHandler(c *fiber
 
 	verificationService := verficationService.NewVerificationService(nil)
 	tokenDuration := cfg.Utils.JWT_TokenDuration
-	expiresAt := fmt.Sprintf("%d", time.Now().Add(time.Hour*time.Duration(tokenDuration)).Unix())
+	expiresAt := time.Now().Add(time.Hour * time.Duration(tokenDuration)).Unix()
 
 	if err := verificationService.Create(email, verificationToken, expiresAt); err != nil {
 		return err
@@ -80,7 +80,7 @@ func (h *VerificationHandler) SendVerificationEmailAndStoreTokenHandler(c *fiber
 	return c.JSON(fiber.Map{"message": "success"})
 }
 
-func (h *VerificationHandler) VerifyEmailHandler(c *fiber.Ctx) error {
+func (h *EmailHandlers) VerifyEmailHandler(c *fiber.Ctx) error {
 	token := c.Query("token")
 
 	verificationService := verficationService.NewVerificationService(nil)

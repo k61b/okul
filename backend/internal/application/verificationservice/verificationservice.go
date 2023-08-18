@@ -12,7 +12,7 @@ func NewVerificationService(verificationRepo repository.VerificationRepository) 
 	return &VerificationService{verificationRepo: verificationRepo}
 }
 
-func (s *VerificationService) Create(email string, token string, expiresAt string) error {
+func (s *VerificationService) Create(email string, token string, expiresAt int64) error {
 	err := s.verificationRepo.Create(email, token, expiresAt)
 	if err != nil {
 		return err

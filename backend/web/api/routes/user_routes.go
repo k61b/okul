@@ -6,7 +6,7 @@ import (
 	"github.com/k61b/okul/web/api/middleware"
 )
 
-func SetupUserRoutes(app *fiber.App, userHandlers *handlers.UserHandlers) {
+func SetupUserRoutes(app *fiber.App, userHandlers *handlers.UserHandlers, verificationHandlers *handlers.EmailHandlers) {
 	user := app.Group("/user")
 
 	user.Post("/", userHandlers.SessionHandler)
@@ -16,4 +16,7 @@ func SetupUserRoutes(app *fiber.App, userHandlers *handlers.UserHandlers) {
 
 	user.Put("/:id", middleware.AuthMiddleware, userHandlers.UpdateHandler)
 	user.Delete("/:id", middleware.AuthMiddleware, userHandlers.DeleteHandler)
+
+	user.Post("/send-email", middleware.AuthMiddleware, verificationHandlers.SendVerificationEmailAndStoreTokenHandler)
+	user.Get("/verify-email", middleware.AuthMiddleware, verificationHandlers.VerifyEmailHandler)
 }

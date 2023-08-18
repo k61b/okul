@@ -5,7 +5,7 @@ import (
 )
 
 type VerificationRepository interface {
-	Create(email string, token string, expiresAt string) error
+	Create(email string, token string, expiresAt int64) error
 	GetEmailFromToken(token string) (string, error)
 	Delete(token string) error
 }
@@ -18,9 +18,9 @@ func NewPostgresVerificationRepository(db *sql.DB) *PostgresVerificationReposito
 	return &PostgresVerificationRepository{db: db}
 }
 
-func (r *PostgresVerificationRepository) Create(email string, token string, expiresAt string) error {
+func (r *PostgresVerificationRepository) Create(email string, token string, expiresAt int64) error {
 	query := `
-		INSERT INTO verifications (email, token, expires_at)
+		INSERT INTO verifications (email, token, expires_at)	
 		VALUES ($1, $2, $3)
 	`
 	_, err := r.db.Exec(query, email, token, expiresAt)
