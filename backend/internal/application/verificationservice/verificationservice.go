@@ -20,3 +20,21 @@ func (s *VerificationService) Create(email string, token string, expiresAt strin
 
 	return nil
 }
+
+func (s *VerificationService) GetEmailFromToken(token string) (string, error) {
+	email, err := s.verificationRepo.GetEmailFromToken(token)
+	if err != nil {
+		return "", err
+	}
+
+	return email, nil
+}
+
+func (s *VerificationService) Delete(token string) error {
+	err := s.verificationRepo.Delete(token)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

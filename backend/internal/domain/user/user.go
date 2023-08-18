@@ -107,3 +107,19 @@ func GetEmailFromToken(token string) (string, error) {
 
 	return claims["email"].(string), nil
 }
+
+// Verify Email
+func VerifyEmail(email, token string) error {
+	parsedToken, err := ParseToken(token)
+	if err != nil {
+		return err
+	}
+
+	claims := parsedToken.Claims.(jwt.MapClaims)
+
+	if claims["email"] != email {
+		return fiber.ErrUnauthorized
+	}
+
+	return nil
+}

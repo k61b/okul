@@ -6,8 +6,8 @@ import (
 
 type VerificationRepository interface {
 	Create(email string, token string, expiresAt string) error
-	GetByEmail(email string) (string, error)
-	Delete(email string) error
+	GetEmailFromToken(token string) (string, error)
+	Delete(token string) error
 }
 
 type PostgresVerificationRepository struct {
@@ -30,26 +30,26 @@ func (r *PostgresVerificationRepository) Create(email string, token string, expi
 	return nil
 }
 
-func (r *PostgresVerificationRepository) GetByEmail(email string) (string, error) {
+func (r *PostgresVerificationRepository) GetEmailFromToken(token string) (string, error) {
 	query := `
-		SELECT token
+		SELECT email
 		FROM verifications
-		WHERE email = $1
+		WHERE token = $1
 	`
-	var token string
-	err := r.db.QueryRow(query, email).Scan(&token)
+	var email string
+	err := r.db.QueryRow(query, token).Scan(&email)
 	if err != nil {
 		return "", err
 	}
-	return token, nil
+	return email, nil
 }
 
-func (r *PostgresVerificationRepository) Delete(email string) error {
+func (r *PostgresVerificationRepository) Delete(token string) error {
 	query := `
 		DELETE FROM verifications
-		WHERE email = $1
+		WHERE token = $1
 	`
-	_, err := r.db.Exec(query, email)
+	_, err := r.db.Exec(query, token)
 	if err != nil {
 		return err
 	}

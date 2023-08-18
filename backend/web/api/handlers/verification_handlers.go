@@ -8,26 +8,27 @@ import (
 	"github.com/go-gomail/gomail"
 	"github.com/gofiber/fiber/v2"
 	"github.com/k61b/okul/config"
+	UpdateUserEmailVerificationStatus "github.com/k61b/okul/internal/application/userservice"
 	verficationService "github.com/k61b/okul/internal/application/verificationservice"
 	userDomain "github.com/k61b/okul/internal/domain/user"
 	verificationDomain "github.com/k61b/okul/internal/domain/verification"
 )
 
-type EmailHandler struct {
+type VerificationHandler struct {
 	dialer *gomail.Dialer
 }
 
-func NewEmailHandler(dialer *gomail.Dialer) *EmailHandler {
-	return &EmailHandler{dialer: dialer}
+func NewEmailHandler(dialer *gomail.Dialer) *VerificationHandler {
+	return &VerificationHandler{dialer: dialer}
 }
 
-func (h *EmailHandler) SendVerificationEmailHandler(to string, token string) error {
+func (h *VerificationHandler) SendVerificationEmailHandler(to string, token string) error {
 	cfg, err := config.LoadConfig("dev")
 	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
 	}
 
-	verificationURL := cfg.Server.Base_Url + "/verify-email?token=" + token
+	verificationURL := cfg.Server.Base_Url + "/verification/verify-email?token=" + token
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", cfg.Email.User)
@@ -46,7 +47,7 @@ func (h *EmailHandler) SendVerificationEmailHandler(to string, token string) err
 	return nil
 }
 
-func (h *EmailHandler) SendVerificationEmailAndStoreTokenHandler(c *fiber.Ctx) error {
+func (h *VerificationHandler) SendVerificationEmailAndStoreTokenHandler(c *fiber.Ctx) error {
 	cfg, err := config.LoadConfig("dev")
 	if err != nil {
 		log.Fatalf("Error loading config: %v", err)
@@ -73,6 +74,31 @@ func (h *EmailHandler) SendVerificationEmailAndStoreTokenHandler(c *fiber.Ctx) e
 	expiresAt := fmt.Sprintf("%d", time.Now().Add(time.Hour*time.Duration(tokenDuration)).Unix())
 
 	if err := verificationService.Create(email, verificationToken, expiresAt); err != nil {
+		return err
+	}
+
+	return c.JSON(fiber.Map{"message": "success"})
+}
+
+func (h *VerificationHandler) VerifyEmailHandler(c *fiber.Ctx) error {
+	token := c.Query("token")
+
+	verificationService := verficationService.NewVerificationService(nil)
+	email, err := verificationService.GetEmailFromToken(token)
+	if err != nil {
+		return err
+	}
+
+	if err := userDomain.VerifyEmail(email, token); err != nil {
+		return err
+	}
+
+	if err := verificationService.Delete(token); err != nil {
+		return err
+	}
+
+	updateUserEmailVerificationStatus := UpdateUserEmailVerificationStatus.NewUserService(nil)
+	if err := updateUserEmailVerificationStatus.UpdateUserEmailVerificationStatus(email); err != nil {
 		return err
 	}
 

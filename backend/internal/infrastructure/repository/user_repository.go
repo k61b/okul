@@ -12,6 +12,7 @@ type UserRepository interface {
 	GetByEmail(email string) (*domain.User, error)
 	Update(user *domain.User) error
 	Delete(id int) error
+	UpdateUserEmailVerificationStatus(email string) error
 }
 
 type PostgresUserRepository struct {
@@ -126,6 +127,20 @@ func (r *PostgresUserRepository) Delete(id int) error {
 	`
 
 	_, err := r.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *PostgresUserRepository) UpdateUserEmailVerificationStatus(email string) error {
+	query := `
+		UPDATE users
+		SET is_email_verified = true
+		WHERE email = $1
+	`
+
+	_, err := r.db.Exec(query, email)
 	if err != nil {
 		return err
 	}
