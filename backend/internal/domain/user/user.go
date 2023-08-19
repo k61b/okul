@@ -15,30 +15,27 @@ import (
 
 // User represents a user entity
 type User struct {
-	ID        int
-	Email     string
-	Password  string
-	Name      string
-	Surname   string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID              int
+	Email           string
+	IsEmailVerified bool
+	Password        string
+	Name            string
+	Surname         string
+	CreatedAt       time.Time
+	UpdatedAt       time.Time
 }
 
 // NewUser creates a new User instance
 func NewUser(email, password, name, surname string) *User {
 	return &User{
-		Email:     email,
-		Password:  password,
-		Name:      name,
-		Surname:   surname,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		Email:           email,
+		IsEmailVerified: false,
+		Password:        password,
+		Name:            name,
+		Surname:         surname,
+		CreatedAt:       time.Now(),
+		UpdatedAt:       time.Now(),
 	}
-}
-
-// GetFullName returns the user's full name
-func (u *User) GetFullName() string {
-	return u.Name + " " + u.Surname
 }
 
 // HashPassword hashes the password using bcrypt

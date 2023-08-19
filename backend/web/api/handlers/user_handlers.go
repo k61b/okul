@@ -2,22 +2,27 @@ package handlers
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/k61b/okul/internal/application/userservice"
-	domain "github.com/k61b/okul/internal/domain/user"
+	"github.com/k61b/okul/internal/application/verificationservice"
+
+	userDomain "github.com/k61b/okul/internal/domain/user"
+	verificationDomain "github.com/k61b/okul/internal/domain/verification"
 )
 
 type UserHandlers struct {
-	userService *userservice.UserService
+	userService         *userservice.UserService
+	verificationService *verificationservice.VerificationService
 }
 
-func NewUserHandlers(userService *userservice.UserService) *UserHandlers {
-	return &UserHandlers{userService: userService}
+func NewUserHandlers(userService *userservice.UserService, verificationService *verificationservice.VerificationService) *UserHandlers {
+	return &UserHandlers{userService: userService, verificationService: verificationService}
 }
 
 func (h *UserHandlers) SessionHandler(c *fiber.Ctx) error {
-	var u domain.User
+	var u userDomain.User
 	if err := c.BodyParser(&u); err != nil {
 		return err
 	}
@@ -28,7 +33,7 @@ func (h *UserHandlers) SessionHandler(c *fiber.Ctx) error {
 	}
 
 	if user == nil {
-		hash, err := domain.HashPassword(u.Password)
+		hash, err := userDomain.HashPassword(u.Password)
 		if err != nil {
 			return err
 		}
@@ -40,30 +45,30 @@ func (h *UserHandlers) SessionHandler(c *fiber.Ctx) error {
 			return err
 		}
 	} else {
-		if !domain.CheckPassword(u.Password, user.Password) {
+		if !userDomain.CheckPassword(u.Password, user.Password) {
 			return fiber.ErrUnauthorized
 		}
 	}
 
-	token, err := domain.GenerateJWTToken(user.Email)
+	token, err := userDomain.GenerateJWTToken(user.Email)
 	if err != nil {
 		return err
 	}
 
-	c.Cookie(domain.GenerateCookie(token))
+	c.Cookie(userDomain.GenerateCookie(token))
 
 	return c.JSON(fiber.Map{"token": token})
 }
 
 func (h *UserHandlers) LogoutHandler(c *fiber.Ctx) error {
-	c.Cookie(domain.GenerateCookie(""))
+	c.Cookie(userDomain.GenerateCookie(""))
 	return c.JSON(fiber.Map{"message": "success"})
 }
 
 func (h *UserHandlers) MeHandler(c *fiber.Ctx) error {
 	token := c.Cookies("token")
 
-	email, err := domain.GetEmailFromToken(token)
+	email, err := userDomain.GetEmailFromToken(token)
 	if err != nil {
 		return err
 	}
@@ -84,7 +89,7 @@ func (h *UserHandlers) UpdateHandler(c *fiber.Ctx) error {
 		return err
 	}
 
-	var u domain.User
+	var u userDomain.User
 	if err := c.BodyParser(&u); err != nil {
 		return err
 	}
@@ -96,6 +101,7 @@ func (h *UserHandlers) UpdateHandler(c *fiber.Ctx) error {
 
 	u.ID = user.ID
 	u.Email = user.Email
+	u.IsEmailVerified = user.IsEmailVerified
 	u.Password = user.Password
 
 	updatedUser, err := h.userService.Update(&u)
@@ -113,6 +119,55 @@ func (h *UserHandlers) DeleteHandler(c *fiber.Ctx) error {
 	}
 
 	if err := h.userService.Delete(id); err != nil {
+		return err
+	}
+
+	return c.JSON(fiber.Map{"message": "success"})
+}
+
+func (h *UserHandlers) SendVerificationEmailAndStoreHandler(c *fiber.Ctx) error {
+	token := c.Cookies("token")
+
+	email, err := userDomain.GetEmailFromToken(token)
+	if err != nil {
+		return err
+	}
+
+	expiresAt := time.Now().Add(time.Hour * 24)
+
+	verificationToken, err := verificationDomain.GenerateVerificationToken(email, expiresAt)
+	if err != nil {
+		return err
+	}
+
+	if err := verificationDomain.SendVerificationEmail(email, verificationToken); err != nil {
+		return err
+	}
+
+	if err := h.verificationService.CreateVerification(email, verificationToken, expiresAt); err != nil {
+		return err
+	}
+
+	return c.JSON(fiber.Map{"message": "success"})
+}
+
+func (h *UserHandlers) VerifyEmailHandler(c *fiber.Ctx) error {
+	token := c.Query("token")
+
+	email, err := h.verificationService.GetEmailFromToken(token)
+	if err != nil {
+		return err
+	}
+
+	if email == "" {
+		return fiber.ErrUnauthorized
+	}
+
+	if err := h.userService.UpdateUserEmailVerificationStatus(email, true); err != nil {
+		return err
+	}
+
+	if err := h.verificationService.DeleteByEmail(email); err != nil {
 		return err
 	}
 
