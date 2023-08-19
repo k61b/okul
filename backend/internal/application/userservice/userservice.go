@@ -59,3 +59,12 @@ func (s *UserService) Delete(id int) error {
 
 	return nil
 }
+
+func (s *UserService) UpdateUserEmailVerificationStatus(email string, isEmailVerified bool) error {
+	err := s.userRepo.UpdateUserEmailVerificationStatus(email, isEmailVerified)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

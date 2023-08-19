@@ -16,4 +16,7 @@ func SetupUserRoutes(app *fiber.App, userHandlers *handlers.UserHandlers) {
 
 	user.Put("/:id", middleware.AuthMiddleware, userHandlers.UpdateHandler)
 	user.Delete("/:id", middleware.AuthMiddleware, userHandlers.DeleteHandler)
+
+	user.Post("/send-email", middleware.AuthMiddleware, userHandlers.SendVerificationEmailAndStoreHandler)
+	user.Get("/verify-email", userHandlers.VerifyEmailHandler)
 }

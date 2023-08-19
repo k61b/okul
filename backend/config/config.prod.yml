@@ -1,5 +1,6 @@
 server:
   port: "80"
+  base_url: "http://localhost:80"
 
 database:
   host: "prod-db-host"
@@ -10,3 +11,10 @@ database:
 
 utils:
   jwt_secret: "mySecret"
+  jwt_token_duration: "24h"
+
+email:
+  host: "smtp.gmail.com"
+  port: "587"
+  user: "your-user@gmail.com"
+  password: "your-password"

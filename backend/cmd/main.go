@@ -8,6 +8,7 @@ import (
 	"github.com/k61b/okul/config"
 	"github.com/k61b/okul/internal/application/schoolservice"
 	"github.com/k61b/okul/internal/application/userservice"
+	"github.com/k61b/okul/internal/application/verificationservice"
 	"github.com/k61b/okul/internal/infrastructure/database/postgres"
 	"github.com/k61b/okul/internal/infrastructure/repository"
 	"github.com/k61b/okul/web/api/handlers"
@@ -42,10 +43,12 @@ func main() {
 	// Initialize repositories
 	userRepo := repository.NewPostgresUserRepository(db.DB())
 	schoolRepo := repository.NewPostgresSchoolRepository(db.DB())
+	verificationRepo := repository.NewPostgresVerificationRepository(db.DB())
 
 	// Initialize application services
 	userService := userservice.NewUserService(userRepo)
 	schoolService := schoolservice.NewSchoolService(schoolRepo)
+	verificationService := verificationservice.NewVerificationService(verificationRepo)
 
 	// Initialize Fiber app
 	app := fiber.New()
@@ -56,7 +59,7 @@ func main() {
 
 	// Initialize handlers
 	schoolHandlers := handlers.NewSchoolHandlers(schoolService)
-	userHandlers := handlers.NewUserHandlers(userService)
+	userHandlers := handlers.NewUserHandlers(userService, verificationService)
 
 	// Initialize routes
 	routes.SetupSchoolRoutes(app, schoolHandlers)

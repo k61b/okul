@@ -17,7 +17,6 @@ func NewPostgreSQLDB(connectionString string) (*PostgreSQLDB, error) {
 		return nil, err
 	}
 
-	// Ping the database to verify the connection
 	err = db.Ping()
 	if err != nil {
 		return nil, err
@@ -40,4 +39,8 @@ func (p *PostgreSQLDB) UserRepo() repository.UserRepository {
 
 func (p *PostgreSQLDB) SchoolRepo() repository.SchoolRepository {
 	return repository.NewPostgresSchoolRepository(p.db)
+}
+
+func (p *PostgreSQLDB) VerificationRepo() repository.VerificationRepository {
+	return repository.NewPostgresVerificationRepository(p.db)
 }
