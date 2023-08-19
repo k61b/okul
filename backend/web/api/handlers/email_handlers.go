@@ -28,15 +28,14 @@ func (h *EmailHandlers) SendVerificationEmailHandler(to string, token string) er
 		log.Fatalf("Error loading config: %v", err)
 	}
 
-	verificationURL := cfg.Server.Base_Url + "/verification/verify-email?token=" + token
+	verificationURL := cfg.Server.Base_Url + "/user/verify-email?token=" + token
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", cfg.Email.User)
 	m.SetHeader("To", to)
 	m.SetHeader("Subject", "Verify your email")
 
-	verificationLink := fmt.Sprintf("%s?token=%s", verificationURL, token)
-	m.SetBody("text/html", fmt.Sprintf("Click <a href=\"%s\">here</a> to verify your email.", verificationLink))
+	m.SetBody("text/html", fmt.Sprintf("Click <a href=\"%s\">here</a> to verify your email.", verificationURL))
 
 	d := gomail.NewDialer(cfg.Email.Host, cfg.Email.Port, cfg.Email.User, cfg.Email.Password)
 

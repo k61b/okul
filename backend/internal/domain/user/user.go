@@ -1,6 +1,7 @@
 package domain
 
 import (
+	"fmt"
 	"log"
 	"time"
 
@@ -116,7 +117,7 @@ func VerifyEmail(email, token string) error {
 	}
 
 	claims := parsedToken.Claims.(jwt.MapClaims)
-
+	fmt.Println(claims["email"], email)
 	if claims["email"] != email {
 		return fiber.ErrUnauthorized
 	}
