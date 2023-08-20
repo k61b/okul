@@ -57,7 +57,63 @@ func SendVerificationEmail(email, token string) error {
 	m.SetHeader("From", cfg.Email.User)
 	m.SetHeader("To", email)
 	m.SetHeader("Subject", "Verify your email")
-	m.SetBody("text/html", "Click <a href=\""+verificationURL+"\">here</a> to verify your email.")
+	m.SetBody("text/html", `
+		<html>
+			<head>
+				<style>
+					body {
+						font-family: Arial, sans-serif;
+					}
+					.container {
+						background-color: #f9f9f9;
+						padding: 20px;
+						border-radius: 10px;
+						text-align: center;
+					}
+					.header {
+						background-color: #ffa500;
+						color: white;
+						padding: 10px;
+						border-radius: 10px 10px 0 0;
+					}
+					.content {
+						padding: 20px;
+					}
+					.button {
+						display: inline-block;
+						background-color: #4caf50;
+						color: white;
+						padding: 10px 20px;
+						text-decoration: none;
+						border-radius: 5px;
+					}
+					.footer {
+						background-color: #4caf50;
+						color: white;
+						padding: 10px;
+						border-radius: 0 0 10px 10px;
+					}
+				</style>
+			</head>
+			<body>
+				<div class="container">
+					<div class="header">
+						<h2>Welcome to `+cfg.Utils.Project_Name+`!</h2>
+					</div>
+					<div class="content">
+						<p>Hello,</p>
+						<p>Thank you for registering with our application. To complete your registration and verify your email, please click the button below:</p>
+						<p><a class="button" href="`+verificationURL+`">Verify Email</a></p>
+						<p>If you didn't sign up for an account, you can safely ignore this email.</p>
+						<p>Regards,<br>The `+cfg.Utils.Project_Name+` Team</p>
+					</div>
+					<div class="footer">
+						<p>© 2023 `+cfg.Utils.Project_Name+`. All rights reserved.</p>
+					</div>
+				</div>
+			</body>
+		</html>
+	`)
 
 	d := gomail.NewDialer(cfg.Email.Host, cfg.Email.Port, cfg.Email.User, cfg.Email.Password)
 

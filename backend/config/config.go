@@ -29,6 +29,7 @@ type DatabaseConfig struct {
 type UtilsConfig struct {
 	JWT_Secret        string `mapstructure:"jwt_secret"`
 	JWT_TokenDuration int    `mapstructure:"jwt_token_duration"`
+	Project_Name      string `mapstructure:"project_name"`
 }
 
 type EmailConfig struct {
