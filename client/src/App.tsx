@@ -16,6 +16,7 @@ import {
   DialogContent,
   DialogDescription,
   DialogHeader,
+  DialogOkButton,
   DialogTitle,
   DialogTrigger,
 } from './components/ui/dialog'
@@ -71,6 +72,7 @@ function App() {
                 account and remove your data from our servers.
               </DialogDescription>
             </DialogHeader>
+            <DialogOkButton />
           </DialogContent>
         </Dialog>
       </div>
