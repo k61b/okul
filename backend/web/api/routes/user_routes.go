@@ -19,4 +19,7 @@ func SetupUserRoutes(app *fiber.App, userHandlers *handlers.UserHandlers) {
 
 	user.Post("/send-email", middleware.AuthMiddleware, userHandlers.SendVerificationEmailAndStoreHandler)
 	user.Get("/verify-email", userHandlers.VerifyEmailHandler)
+
+	user.Post("/forgot-password", userHandlers.ForgotPasswordHandler)
+	user.Post("/reset-password", userHandlers.ResetPasswordHandler)
 }

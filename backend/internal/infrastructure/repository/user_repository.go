@@ -13,6 +13,7 @@ type UserRepository interface {
 	Update(user *domain.User) error
 	Delete(id int) error
 	UpdateUserEmailVerificationStatus(email string, isEmailVerified bool) error
+	UpdateUserPassword(email, password string) error
 }
 
 type PostgresUserRepository struct {
@@ -141,6 +142,20 @@ func (r *PostgresUserRepository) UpdateUserEmailVerificationStatus(email string,
 	`
 
 	_, err := r.db.Exec(query, isEmailVerified, email)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r *PostgresUserRepository) UpdateUserPassword(email, password string) error {
+	query := `
+		UPDATE users
+		SET password_hash = $1
+		WHERE email = $2
+	`
+
+	_, err := r.db.Exec(query, password, email)
 	if err != nil {
 		return err
 	}
