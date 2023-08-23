@@ -8,8 +8,8 @@ import (
 
 type VerificationRepository interface {
 	Create(verification *domain.Verification) error
-	GetEmailFromToken(token string) (string, error)
-	DeleteByEmail(email string) error
+	GetVerificationInfoFromToken(token string) (int, string, string, error)
+	DeleteByID(id int) error
 }
 
 type PostgresVerificationRepository struct {
@@ -22,13 +22,14 @@ func NewPostgresVerificationRepository(db *sql.DB) *PostgresVerificationReposito
 
 func (r *PostgresVerificationRepository) Create(verification *domain.Verification) error {
 	query := `
-		INSERT INTO verification_tokens (email, token, expires_at)
-		VALUES ($1, $2, $3)
+		INSERT INTO verification_tokens (type, email, token, expires_at)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id
 	`
 
 	err := r.db.QueryRow(
 		query,
+		verification.VerificationType,
 		verification.Email,
 		verification.Token,
 		verification.ExpiresAt,
@@ -39,30 +40,32 @@ func (r *PostgresVerificationRepository) Create(verification *domain.Verificatio
 	return nil
 }
 
-func (r *PostgresVerificationRepository) GetEmailFromToken(token string) (string, error) {
+func (r *PostgresVerificationRepository) GetVerificationInfoFromToken(token string) (int, string, string, error) {
 	query := `
-		SELECT email
+		SELECT id, type, email
 		FROM verification_tokens
 		WHERE token = $1
 	`
 
+	var id int
+	var verificationType string
 	var email string
 
-	err := r.db.QueryRow(query, token).Scan(&email)
+	err := r.db.QueryRow(query, token).Scan(&id, &verificationType, &email)
 	if err != nil {
-		return "", err
+		return 0, "", "", err
 	}
 
-	return email, nil
+	return id, verificationType, email, nil
 }
 
-func (r *PostgresVerificationRepository) DeleteByEmail(email string) error {
+func (r *PostgresVerificationRepository) DeleteByID(id int) error {
 	query := `
 		DELETE FROM verification_tokens
-		WHERE email = $1
+		WHERE id = $1
 	`
 
-	_, err := r.db.Exec(query, email)
+	_, err := r.db.Exec(query, id)
 	if err != nil {
 		return err
 	}

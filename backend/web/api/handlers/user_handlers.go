@@ -127,6 +127,7 @@ func (h *UserHandlers) DeleteHandler(c *fiber.Ctx) error {
 
 func (h *UserHandlers) SendVerificationEmailAndStoreHandler(c *fiber.Ctx) error {
 	token := c.Cookies("token")
+	verificationType := "email"
 
 	email, err := userDomain.GetEmailFromToken(token)
 	if err != nil {
@@ -144,7 +145,7 @@ func (h *UserHandlers) SendVerificationEmailAndStoreHandler(c *fiber.Ctx) error 
 		return err
 	}
 
-	if err := h.verificationService.CreateVerification(email, verificationToken, expiresAt); err != nil {
+	if err := h.verificationService.CreateVerification(verificationType, email, verificationToken, expiresAt); err != nil {
 		return err
 	}
 
@@ -154,20 +155,86 @@ func (h *UserHandlers) SendVerificationEmailAndStoreHandler(c *fiber.Ctx) error 
 func (h *UserHandlers) VerifyEmailHandler(c *fiber.Ctx) error {
 	token := c.Query("token")
 
-	email, err := h.verificationService.GetEmailFromToken(token)
+	id, verificationType, email, err := h.verificationService.GetVerificationInfoFromToken(token)
 	if err != nil {
 		return err
 	}
 
-	if email == "" {
-		return fiber.ErrUnauthorized
+	if verificationType != "email" && email == "" {
+		return fiber.ErrBadRequest
 	}
 
 	if err := h.userService.UpdateUserEmailVerificationStatus(email, true); err != nil {
 		return err
 	}
 
-	if err := h.verificationService.DeleteByEmail(email); err != nil {
+	if err := h.verificationService.DeleteVerification(id); err != nil {
+		return err
+	}
+
+	return c.JSON(fiber.Map{"message": "success"})
+}
+
+func (h *UserHandlers) ForgotPasswordHandler(c *fiber.Ctx) error {
+	var u userDomain.User
+	if err := c.BodyParser(&u); err != nil {
+		return err
+	}
+
+	user, err := h.userService.GetByEmail(u.Email)
+	if err != nil {
+		return err
+	}
+
+	if user == nil {
+		return fiber.ErrNotFound
+	}
+
+	expiresAt := time.Now().Add(time.Hour * 24)
+
+	verificationToken, err := verificationDomain.GenerateVerificationToken(u.Email, expiresAt)
+	if err != nil {
+		return err
+	}
+
+	if err := verificationDomain.SendVerificationEmailForPassword(u.Email, verificationToken); err != nil {
+		return err
+	}
+
+	if err := h.verificationService.CreateVerification("password", u.Email, verificationToken, expiresAt); err != nil {
+		return err
+	}
+
+	return c.JSON(fiber.Map{"message": "success"})
+}
+
+func (h *UserHandlers) ResetPasswordHandler(c *fiber.Ctx) error {
+	var u userDomain.User
+	if err := c.BodyParser(&u); err != nil {
+		return err
+	}
+
+	token := c.Query("token")
+
+	id, verificationType, email, err := h.verificationService.GetVerificationInfoFromToken(token)
+	if err != nil {
+		return err
+	}
+
+	if verificationType != "password" && email == "" {
+		return fiber.ErrBadRequest
+	}
+
+	hash, err := userDomain.HashPassword(u.Password)
+	if err != nil {
+		return err
+	}
+
+	if err := h.userService.UpdateUserPassword(email, hash); err != nil {
+		return err
+	}
+
+	if err := h.verificationService.DeleteVerification(id); err != nil {
 		return err
 	}
 

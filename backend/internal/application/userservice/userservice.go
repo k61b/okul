@@ -68,3 +68,12 @@ func (s *UserService) UpdateUserEmailVerificationStatus(email string, isEmailVer
 
 	return nil
 }
+
+func (s *UserService) UpdateUserPassword(email, password string) error {
+	err := s.userRepo.UpdateUserPassword(email, password)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

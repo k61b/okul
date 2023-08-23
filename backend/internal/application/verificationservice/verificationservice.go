@@ -15,8 +15,8 @@ func NewVerificationService(verificationRepo repository.VerificationRepository) 
 	return &VerificationService{verificationRepo: verificationRepo}
 }
 
-func (s *VerificationService) CreateVerification(email, token string, expiresAt time.Time) error {
-	verification := domain.NewVerification(email, token, expiresAt)
+func (s *VerificationService) CreateVerification(verificationType, email, token string, expiresAt time.Time) error {
+	verification := domain.NewVerification(verificationType, email, token, expiresAt)
 
 	err := s.verificationRepo.Create(verification)
 	if err != nil {
@@ -26,17 +26,17 @@ func (s *VerificationService) CreateVerification(email, token string, expiresAt 
 	return nil
 }
 
-func (s *VerificationService) GetEmailFromToken(token string) (string, error) {
-	email, err := s.verificationRepo.GetEmailFromToken(token)
+func (s *VerificationService) GetVerificationInfoFromToken(token string) (int, string, string, error) {
+	id, verificationType, email, err := s.verificationRepo.GetVerificationInfoFromToken(token)
 	if err != nil {
-		return "", err
+		return 0, "", "", err
 	}
 
-	return email, nil
+	return id, verificationType, email, nil
 }
 
-func (s *VerificationService) DeleteByEmail(email string) error {
-	err := s.verificationRepo.DeleteByEmail(email)
+func (s *VerificationService) DeleteVerification(id int) error {
+	err := s.verificationRepo.DeleteByID(id)
 	if err != nil {
 		return err
 	}

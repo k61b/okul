@@ -23,6 +23,7 @@ CREATE TABLE IF NOT EXISTS schools (
 -- Create the 'verification_tokens' table
 CREATE TABLE IF NOT EXISTS verification_tokens (
     id SERIAL PRIMARY KEY,
+    type VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     token VARCHAR(255) NOT NULL,
     expires_at TIMESTAMPTZ NOT NULL,
