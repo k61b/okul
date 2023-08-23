@@ -6,33 +6,39 @@ import (
 	domain "github.com/k61b/okul/internal/domain/school"
 )
 
-// SchoolRepository represents the repository interface for the School entity
 type SchoolRepository interface {
 	Create(school *domain.School) error
-	GetByID(id int) (*domain.School, error)
-	// Implement additional methods as needed
 }
 
-// PostgresSchoolRepository represents the PostgreSQL repository implementation for the School entity
 type PostgresSchoolRepository struct {
 	db *sql.DB
 }
 
-// NewPostgresSchoolRepository creates a new instance of PostgresSchoolRepository
 func NewPostgresSchoolRepository(db *sql.DB) *PostgresSchoolRepository {
 	return &PostgresSchoolRepository{db: db}
 }
 
-// Create creates a new school record in the database
 func (r *PostgresSchoolRepository) Create(school *domain.School) error {
-	// Implement the database insertion logic here
+	query := `
+		INSERT INTO schools (name, description, address, phone_number, owner_id, approved, suspended, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		RETURNING id
+	`
+
+	err := r.db.QueryRow(
+		query,
+		school.Name,
+		school.Description,
+		school.Address,
+		school.PhoneNumber,
+		school.OwnerID,
+		school.Approved,
+		school.Suspended,
+		school.CreatedAt,
+		school.UpdatedAt,
+	).Scan(&school.ID)
+	if err != nil {
+		return err
+	}
 	return nil
 }
-
-// GetByID retrieves a school by ID from the database
-func (r *PostgresSchoolRepository) GetByID(id int) (*domain.School, error) {
-	// Implement the database retrieval logic here
-	return nil, nil
-}
-
-// Implement additional methods for SchoolRepository as needed
