@@ -12,8 +12,6 @@ func SetupSchoolRoutes(app *fiber.App, schoolHandlers *handlers.SchoolHandlers) 
 	school := app.Group("/school")
 
 	school.Use(middleware.AuthMiddleware)
-	// Add any other middleware specific to schools
 
 	school.Post("/", schoolHandlers.CreateSchoolHandler)
-	// Define more school routes here
 }
