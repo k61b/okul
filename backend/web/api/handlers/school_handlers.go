@@ -52,3 +52,19 @@ func (h *SchoolHandlers) GetAllSchoolsHandler(c *fiber.Ctx) error {
 		"schools": schools,
 	})
 }
+
+func (h *SchoolHandlers) GetSchoolByIDHandler(c *fiber.Ctx) error {
+	id, err := c.ParamsInt("id")
+	if err != nil {
+		return err
+	}
+
+	school, err := h.schoolService.GetSchoolByID(id)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(fiber.Map{
+		"school": school,
+	})
+}
