@@ -41,3 +41,14 @@ func (h *SchoolHandlers) CreateSchoolHandler(c *fiber.Ctx) error {
 		"message": "School created successfully",
 	})
 }
+
+func (h *SchoolHandlers) GetAllSchoolsHandler(c *fiber.Ctx) error {
+	schools, err := h.schoolService.GetAllSchools()
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(fiber.Map{
+		"schools": schools,
+	})
+}
