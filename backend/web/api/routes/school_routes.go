@@ -14,4 +14,5 @@ func SetupSchoolRoutes(app *fiber.App, schoolHandlers *handlers.SchoolHandlers) 
 	school.Use(middleware.AuthMiddleware)
 
 	school.Post("/", schoolHandlers.CreateSchoolHandler)
+	school.Get("/", schoolHandlers.GetAllSchoolsHandler)
 }

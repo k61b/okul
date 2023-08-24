@@ -23,3 +23,12 @@ func (s *SchoolService) CreateSchool(name, description, address, phone_number st
 
 	return nil
 }
+
+func (s *SchoolService) GetAllSchools() ([]*domain.School, error) {
+	schools, err := s.schoolRepo.GetAllSchools()
+	if err != nil {
+		return nil, err
+	}
+
+	return schools, nil
+}
