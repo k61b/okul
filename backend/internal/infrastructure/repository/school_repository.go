@@ -9,6 +9,7 @@ import (
 type SchoolRepository interface {
 	Create(school *domain.School) error
 	GetAllSchools() ([]*domain.School, error)
+	GetSchoolByID(id int) (*domain.School, error)
 }
 
 type PostgresSchoolRepository struct {
@@ -79,4 +80,32 @@ func (r *PostgresSchoolRepository) GetAllSchools() ([]*domain.School, error) {
 	}
 
 	return schools, nil
+}
+
+func (r *PostgresSchoolRepository) GetSchoolByID(id int) (*domain.School, error) {
+	query := `
+		SELECT id, name, description, address, phone_number, owner_id, approved, suspended, created_at, updated_at
+		FROM schools
+		WHERE id = $1
+	`
+
+	school := &domain.School{}
+
+	err := r.db.QueryRow(query, id).Scan(
+		&school.ID,
+		&school.Name,
+		&school.Description,
+		&school.Address,
+		&school.PhoneNumber,
+		&school.OwnerID,
+		&school.Approved,
+		&school.Suspended,
+		&school.CreatedAt,
+		&school.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	return school, nil
 }

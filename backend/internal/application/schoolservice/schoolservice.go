@@ -32,3 +32,12 @@ func (s *SchoolService) GetAllSchools() ([]*domain.School, error) {
 
 	return schools, nil
 }
+
+func (s *SchoolService) GetSchoolByID(id int) (*domain.School, error) {
+	school, err := s.schoolRepo.GetSchoolByID(id)
+	if err != nil {
+		return nil, err
+	}
+
+	return school, nil
+}
