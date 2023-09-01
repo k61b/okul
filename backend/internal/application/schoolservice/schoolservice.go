@@ -13,8 +13,8 @@ func NewSchoolService(schoolRepo repository.SchoolRepository) *SchoolService {
 	return &SchoolService{schoolRepo: schoolRepo}
 }
 
-func (s *SchoolService) CreateSchool(name, description, address, phone_number string, owner_id int) error {
-	school := domain.NewSchool(name, description, address, phone_number, owner_id)
+func (s *SchoolService) CreateSchool(name, description, address, phone_number, owner_email string) error {
+	school := domain.NewSchool(name, description, address, phone_number, owner_email)
 
 	err := s.schoolRepo.Create(school)
 	if err != nil {
@@ -40,4 +40,13 @@ func (s *SchoolService) GetSchoolByID(id int) (*domain.School, error) {
 	}
 
 	return school, nil
+}
+
+func (s *SchoolService) UpdateSchool(school *domain.School) error {
+	err := s.schoolRepo.UpdateSchool(school)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

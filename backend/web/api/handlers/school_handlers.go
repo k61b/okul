@@ -1,8 +1,13 @@
 package handlers
 
 import (
+	"strconv"
+	"time"
+
 	"github.com/gofiber/fiber/v2"
 	"github.com/k61b/okul/internal/application/schoolservice"
+
+	userDomain "github.com/k61b/okul/internal/domain/user"
 )
 
 type SchoolHandlers struct {
@@ -14,24 +19,30 @@ func NewSchoolHandlers(schoolService *schoolservice.SchoolService) *SchoolHandle
 }
 
 func (h *SchoolHandlers) CreateSchoolHandler(c *fiber.Ctx) error {
+	token := c.Cookies("token")
+
+	owner_email, err := userDomain.GetEmailFromToken(token)
+	if err != nil {
+		return err
+	}
+
 	var body struct {
 		Name        string `json:"name"`
 		Description string `json:"description"`
 		Address     string `json:"address"`
 		PhoneNumber string `json:"phone_number"`
-		OwnerID     int    `json:"owner_id"`
 	}
 
 	if err := c.BodyParser(&body); err != nil {
 		return err
 	}
 
-	err := h.schoolService.CreateSchool(
+	err = h.schoolService.CreateSchool(
 		body.Name,
 		body.Description,
 		body.Address,
 		body.PhoneNumber,
-		body.OwnerID,
+		owner_email,
 	)
 	if err != nil {
 		return err
@@ -66,5 +77,54 @@ func (h *SchoolHandlers) GetSchoolByIDHandler(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{
 		"school": school,
+	})
+}
+
+func (h *SchoolHandlers) UpdateSchoolHandler(c *fiber.Ctx) error {
+	token := c.Cookies("token")
+	params := c.Params("id")
+	id, err := strconv.Atoi(params)
+	if err != nil {
+		return err
+	}
+
+	email, err := userDomain.GetEmailFromToken(token)
+	if err != nil {
+		return err
+	}
+
+	var body struct {
+		Name        string `json:"name"`
+		Description string `json:"description"`
+		Address     string `json:"address"`
+		PhoneNumber string `json:"phone_number"`
+	}
+
+	if err := c.BodyParser(&body); err != nil {
+		return err
+	}
+
+	school, err := h.schoolService.GetSchoolByID(id)
+	if err != nil {
+		return err
+	}
+
+	if school.OwnerEmail != email {
+		return fiber.NewError(fiber.StatusForbidden, "You are not authorized to update this school")
+	}
+
+	school.Name = body.Name
+	school.Description = body.Description
+	school.Address = body.Address
+	school.PhoneNumber = body.PhoneNumber
+	school.UpdatedAt = time.Now()
+
+	err = h.schoolService.UpdateSchool(school)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "School updated successfully",
 	})
 }
