@@ -10,6 +10,7 @@ type SchoolRepository interface {
 	Create(school *domain.School) error
 	GetAllSchools() ([]*domain.School, error)
 	GetSchoolByID(id int) (*domain.School, error)
+	UpdateSchool(school *domain.School) error
 }
 
 type PostgresSchoolRepository struct {
@@ -22,7 +23,7 @@ func NewPostgresSchoolRepository(db *sql.DB) *PostgresSchoolRepository {
 
 func (r *PostgresSchoolRepository) Create(school *domain.School) error {
 	query := `
-		INSERT INTO schools (name, description, address, phone_number, owner_id, approved, suspended, created_at, updated_at)
+		INSERT INTO schools (name, description, address, phone_number, owner_email, approved, suspended, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 		RETURNING id
 	`
@@ -33,7 +34,7 @@ func (r *PostgresSchoolRepository) Create(school *domain.School) error {
 		school.Description,
 		school.Address,
 		school.PhoneNumber,
-		school.OwnerID,
+		school.OwnerEmail,
 		school.Approved,
 		school.Suspended,
 		school.CreatedAt,
@@ -47,7 +48,7 @@ func (r *PostgresSchoolRepository) Create(school *domain.School) error {
 
 func (r *PostgresSchoolRepository) GetAllSchools() ([]*domain.School, error) {
 	query := `
-		SELECT id, name, description, address, phone_number, owner_id, approved, suspended, created_at, updated_at
+		SELECT id, name, description, address, phone_number, owner_email, approved, suspended, created_at, updated_at
 		FROM schools
 	`
 
@@ -67,7 +68,7 @@ func (r *PostgresSchoolRepository) GetAllSchools() ([]*domain.School, error) {
 			&school.Description,
 			&school.Address,
 			&school.PhoneNumber,
-			&school.OwnerID,
+			&school.OwnerEmail,
 			&school.Approved,
 			&school.Suspended,
 			&school.CreatedAt,
@@ -84,7 +85,7 @@ func (r *PostgresSchoolRepository) GetAllSchools() ([]*domain.School, error) {
 
 func (r *PostgresSchoolRepository) GetSchoolByID(id int) (*domain.School, error) {
 	query := `
-		SELECT id, name, description, address, phone_number, owner_id, approved, suspended, created_at, updated_at
+		SELECT id, name, description, address, phone_number, owner_email, approved, suspended, created_at, updated_at
 		FROM schools
 		WHERE id = $1
 	`
@@ -97,7 +98,7 @@ func (r *PostgresSchoolRepository) GetSchoolByID(id int) (*domain.School, error)
 		&school.Description,
 		&school.Address,
 		&school.PhoneNumber,
-		&school.OwnerID,
+		&school.OwnerEmail,
 		&school.Approved,
 		&school.Suspended,
 		&school.CreatedAt,
@@ -108,4 +109,27 @@ func (r *PostgresSchoolRepository) GetSchoolByID(id int) (*domain.School, error)
 	}
 
 	return school, nil
+}
+
+func (r *PostgresSchoolRepository) UpdateSchool(school *domain.School) error {
+	query := `
+		UPDATE schools
+		SET name = $1, description = $2, address = $3, phone_number = $4, updated_at = $5
+		WHERE id = $6
+	`
+
+	_, err := r.db.Exec(
+		query,
+		school.Name,
+		school.Description,
+		school.Address,
+		school.PhoneNumber,
+		school.UpdatedAt,
+		school.ID,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

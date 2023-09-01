@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS schools (
     description VARCHAR(255) NOT NULL,
     address VARCHAR(255) NOT NULL,
     phone_number VARCHAR(255) NOT NULL,
-    owner_id INT REFERENCES users(id) ON DELETE CASCADE,
+    owner_email VARCHAR(255) NOT NULL,
     approved BOOLEAN DEFAULT FALSE,
     suspended BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMPTZ DEFAULT NOW(),
