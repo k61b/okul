@@ -50,3 +50,12 @@ func (s *SchoolService) UpdateSchool(school *domain.School) error {
 
 	return nil
 }
+
+func (s *SchoolService) SuspendSchool(id int) error {
+	err := s.schoolRepo.SuspendSchool(id)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
