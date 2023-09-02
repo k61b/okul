@@ -15,8 +15,14 @@ import (
 	"github.com/k61b/okul/web/api/handlers"
 	"github.com/k61b/okul/web/api/middleware"
 	"github.com/k61b/okul/web/api/routes"
+
+	_ "github.com/k61b/okul/docs"
+	fiberSwagger "github.com/swaggo/fiber-swagger"
 )
 
+// @title Okul API
+// @description This is a sample server Okul server.
+// @BasePath /api/v1
 func main() {
 	// Load configuration
 	cfg, err := config.LoadConfig("dev") // Adjust the environment ("dev", "prod", etc.) as needed
@@ -69,6 +75,9 @@ func main() {
 	routes.SetupSchoolRoutes(app, schoolHandlers)
 	routes.SetupUserRoutes(app, userHandlers)
 	routes.SetupFavoriteRoutes(app, favoriteHandlers)
+
+	// Swagger
+	app.Get("/swagger/*", fiberSwagger.WrapHandler)
 
 	// Start the Fiber app
 	fmt.Printf("Server is running on port %s\n", cfg.Server.Port)
