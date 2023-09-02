@@ -1,5 +1,3 @@
-// web/api/routes/school_routes.go
-
 package routes
 
 import (
