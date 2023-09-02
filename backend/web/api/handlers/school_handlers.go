@@ -128,3 +128,35 @@ func (h *SchoolHandlers) UpdateSchoolHandler(c *fiber.Ctx) error {
 		"message": "School updated successfully",
 	})
 }
+
+func (h *SchoolHandlers) SuspendSchoolHandler(c *fiber.Ctx) error {
+	token := c.Cookies("token")
+	params := c.Params("id")
+	id, err := strconv.Atoi(params)
+	if err != nil {
+		return err
+	}
+
+	email, err := userDomain.GetEmailFromToken(token)
+	if err != nil {
+		return err
+	}
+
+	school, err := h.schoolService.GetSchoolByID(id)
+	if err != nil {
+		return err
+	}
+
+	if school.OwnerEmail != email {
+		return fiber.NewError(fiber.StatusForbidden, "You are not authorized to suspend this school")
+	}
+
+	err = h.schoolService.SuspendSchool(id)
+	if err != nil {
+		return err
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "School suspended successfully",
+	})
+}

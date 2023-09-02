@@ -11,6 +11,7 @@ type SchoolRepository interface {
 	GetAllSchools() ([]*domain.School, error)
 	GetSchoolByID(id int) (*domain.School, error)
 	UpdateSchool(school *domain.School) error
+	SuspendSchool(id int) error
 }
 
 type PostgresSchoolRepository struct {
@@ -127,6 +128,21 @@ func (r *PostgresSchoolRepository) UpdateSchool(school *domain.School) error {
 		school.UpdatedAt,
 		school.ID,
 	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (r *PostgresSchoolRepository) SuspendSchool(id int) error {
+	query := `
+		UPDATE schools
+		SET suspended = true
+		WHERE id = $1
+	`
+
+	_, err := r.db.Exec(query, id)
 	if err != nil {
 		return err
 	}
