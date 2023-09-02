@@ -42,6 +42,15 @@ func (s *SchoolService) GetSchoolByID(id int) (*domain.School, error) {
 	return school, nil
 }
 
+func (s *SchoolService) GetSchoolsByIDs(ids []int) ([]*domain.School, error) {
+	schools, err := s.schoolRepo.GetSchoolsByIDs(ids)
+	if err != nil {
+		return nil, err
+	}
+
+	return schools, nil
+}
+
 func (s *SchoolService) UpdateSchool(school *domain.School) error {
 	err := s.schoolRepo.UpdateSchool(school)
 	if err != nil {

@@ -4,12 +4,14 @@ import (
 	"database/sql"
 
 	domain "github.com/k61b/okul/internal/domain/school"
+	"github.com/lib/pq"
 )
 
 type SchoolRepository interface {
 	Create(school *domain.School) error
 	GetAllSchools() ([]*domain.School, error)
 	GetSchoolByID(id int) (*domain.School, error)
+	GetSchoolsByIDs(ids []int) ([]*domain.School, error)
 	UpdateSchool(school *domain.School) error
 	SuspendSchool(id int) error
 }
@@ -148,4 +150,47 @@ func (r *PostgresSchoolRepository) SuspendSchool(id int) error {
 	}
 
 	return nil
+}
+
+func (r *PostgresSchoolRepository) GetSchoolsByIDs(ids []int) ([]*domain.School, error) {
+	var idArray pq.Int64Array
+	for _, id := range ids {
+		idArray = append(idArray, int64(id))
+	}
+
+	query := `
+		SELECT id, name, description, address, phone_number, owner_email, approved, suspended, created_at, updated_at
+		FROM schools
+		WHERE id = ANY($1)
+	`
+
+	rows, err := r.db.Query(query, idArray)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	schools := make([]*domain.School, 0)
+
+	for rows.Next() {
+		school := &domain.School{}
+		err := rows.Scan(
+			&school.ID,
+			&school.Name,
+			&school.Description,
+			&school.Address,
+			&school.PhoneNumber,
+			&school.OwnerEmail,
+			&school.Approved,
+			&school.Suspended,
+			&school.CreatedAt,
+			&school.UpdatedAt,
+		)
+		if err != nil {
+			return nil, err
+		}
+		schools = append(schools, school)
+	}
+
+	return schools, nil
 }
