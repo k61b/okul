@@ -21,6 +21,17 @@ func NewFavoriteHandlers(favoriteService *favoriteservice.FavoriteService, schoo
 	return &FavoriteHandlers{favoriteService: favoriteService, schoolService: schoolService, userService: userService}
 }
 
+// @Summary Create a favorite
+// @Description Create a favorite
+// @Tags favorites
+// @Accept json
+// @Produce json
+// @Param schoolID path int true "School ID"
+// @Success 201 {object} string "Created"
+// @Failure 400 {object} string "Bad Request"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /favorites/{schoolID} [post]
 func (h *FavoriteHandlers) CreateFavoriteHandler(c *fiber.Ctx) error {
 	token := c.Cookies("token")
 
@@ -47,6 +58,15 @@ func (h *FavoriteHandlers) CreateFavoriteHandler(c *fiber.Ctx) error {
 	return c.SendStatus(fiber.StatusCreated)
 }
 
+// @Summary Get favorite schools
+// @Description Get favorite schools
+// @Tags favorites
+// @Accept json
+// @Produce json
+// @Success 200 {object} string "OK"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /favorites [get]
 func (h *FavoriteHandlers) GetFavoritesSchoolsHandler(c *fiber.Ctx) error {
 	token := c.Cookies("token")
 
@@ -73,6 +93,16 @@ func (h *FavoriteHandlers) GetFavoritesSchoolsHandler(c *fiber.Ctx) error {
 	return c.JSON(schools)
 }
 
+// @Summary Delete a favorite
+// @Description Delete a favorite
+// @Tags favorites
+// @Accept json
+// @Produce json
+// @Param schoolID path int true "School ID"
+// @Success 200 {object} string "OK"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /favorites/{schoolID} [delete]
 func (h *FavoriteHandlers) DeleteFavoriteHandler(c *fiber.Ctx) error {
 	token := c.Cookies("token")
 

@@ -18,6 +18,20 @@ func NewSchoolHandlers(schoolService *schoolservice.SchoolService) *SchoolHandle
 	return &SchoolHandlers{schoolService: schoolService}
 }
 
+// @Summary Create a school
+// @Description Create a school
+// @Tags schools
+// @Accept json
+// @Produce json
+// @Param name body string true "Name"
+// @Param description body string true "Description"
+// @Param address body string true "Address"
+// @Param phone_number body string true "Phone Number"
+// @Success 201 {object} string "Created"
+// @Failure 400 {object} string "Bad Request"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /schools [post]
 func (h *SchoolHandlers) CreateSchoolHandler(c *fiber.Ctx) error {
 	token := c.Cookies("token")
 
@@ -53,6 +67,15 @@ func (h *SchoolHandlers) CreateSchoolHandler(c *fiber.Ctx) error {
 	})
 }
 
+// @Summary Get all schools
+// @Description Get all schools
+// @Tags schools
+// @Accept json
+// @Produce json
+// @Success 200 {object} string "OK"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /schools [get]
 func (h *SchoolHandlers) GetAllSchoolsHandler(c *fiber.Ctx) error {
 	schools, err := h.schoolService.GetAllSchools()
 	if err != nil {
@@ -64,6 +87,16 @@ func (h *SchoolHandlers) GetAllSchoolsHandler(c *fiber.Ctx) error {
 	})
 }
 
+// @Summary Get school by ID
+// @Description Get school by ID
+// @Tags schools
+// @Accept json
+// @Produce json
+// @Param id path int true "School ID"
+// @Success 200 {object} string "OK"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /schools/{id} [get]
 func (h *SchoolHandlers) GetSchoolByIDHandler(c *fiber.Ctx) error {
 	id, err := c.ParamsInt("id")
 	if err != nil {
@@ -80,6 +113,21 @@ func (h *SchoolHandlers) GetSchoolByIDHandler(c *fiber.Ctx) error {
 	})
 }
 
+// @Summary Update a school
+// @Description Update a school
+// @Tags schools
+// @Accept json
+// @Produce json
+// @Param id path int true "School ID"
+// @Param name body string true "Name"
+// @Param description body string true "Description"
+// @Param address body string true "Address"
+// @Param phone_number body string true "Phone Number"
+// @Success 200 {object} string "OK"
+// @Failure 400 {object} string "Bad Request"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /schools/{id} [put]
 func (h *SchoolHandlers) UpdateSchoolHandler(c *fiber.Ctx) error {
 	token := c.Cookies("token")
 	params := c.Params("id")
@@ -129,6 +177,17 @@ func (h *SchoolHandlers) UpdateSchoolHandler(c *fiber.Ctx) error {
 	})
 }
 
+// @Summary Delete a school
+// @Description Delete a school
+// @Tags schools
+// @Accept json
+// @Produce json
+// @Param id path int true "School ID"
+// @Success 200 {object} string "OK"
+// @Failure 400 {object} string "Bad Request"
+// @Failure 401 {object} string "Unauthorized"
+// @Failure 500 {object} string "Internal Server Error"
+// @Router /schools/{id} [delete]
 func (h *SchoolHandlers) SuspendSchoolHandler(c *fiber.Ctx) error {
 	token := c.Cookies("token")
 	params := c.Params("id")
