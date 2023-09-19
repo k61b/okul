@@ -1,0 +1,19 @@
+.bg {
+  background: rgb(240, 222, 129);
+  background: linear-gradient(
+    90deg,
+    rgba(240, 222, 129, 1) 0%,
+    rgba(254, 185, 51, 1) 47%,
+    rgba(216, 161, 62, 1) 100%
+  );
+  height: 500px;
+  transition: height 0.5s ease-in-out;
+}
+
+.bg__h {
+  height: 100dvh;
+}
+
+.climb {
+  z-index: -1;
+}
