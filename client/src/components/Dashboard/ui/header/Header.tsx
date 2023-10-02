@@ -9,6 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
+import { BsFacebook, BsInstagram, BsTwitter } from 'react-icons/bs'
 export default function Header() {
   return (
     <div className="w-full bg-white shadow-xl sticky top-0 left-0 right-0">
@@ -31,7 +32,7 @@ export default function Header() {
                 </li>
               </ul>
 
-              <ul className="mt-5 text-slate-600 font-semibold text-base space-x-4">
+              <ul className="mt-5 text-slate-600 font-semibold text-base space-x-3 border-b">
                 <SheetTitle className="mb-5">For School</SheetTitle>
                 <li className="cursor-pointer hover:underline hover:text-teal-700 mb-4">
                   <a href="mailto:someone@example.com">Contact Us</a>
@@ -43,6 +44,30 @@ export default function Header() {
                   Work with Us
                 </li>
               </ul>
+
+              <ul className="flex flex-row items-center space-x-3 mb-5">
+                <li>
+                  <ButtonWithIcon
+                    icon={<BsInstagram />}
+                    classes="mt-7 bg-transparent hover:bg-transparent text-slate-900 text-xl border	rounded-full hover:bg-slate-900 hover:text-white"
+                  />
+                </li>
+                <li>
+                  <ButtonWithIcon
+                    icon={<BsTwitter />}
+                    classes="mt-7 bg-transparent hover:bg-transparent text-slate-900 hover:bg-slate-900 hover:text-white text-xl border	rounded-full"
+                  />
+                </li>
+                <li>
+                  <ButtonWithIcon
+                    icon={<BsFacebook />}
+                    classes="mt-7 bg-transparent hover:bg-transparent text-slate-900 hover:bg-slate-900 hover:text-white text-xl border	rounded-full"
+                  />
+                </li>
+              </ul>
+              <span className="text-sm text-muted-foreground">
+                Copyright © 2023 Snobe. All rights reserved.
+              </span>
             </SheetContent>
           </Sheet>
         </div>
