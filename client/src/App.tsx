@@ -20,10 +20,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from './components/ui/dialog'
+import Header from './components/Dashboard/ui/header/Header'
 
 function App() {
   return (
-    <div className="flex flex-col justify-center items-center m-7">
+    <div className="flex flex-col justify-center items-center">
+      <Header />
+
       <WrappedButton label="Click Me" />
 
       <ButtonWithIcon

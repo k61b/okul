@@ -17,7 +17,7 @@ function SignUp() {
         <CardHeader className="shadow-md mb-4 flex flex-row justify-between">
           <CardTitle className="text-amber-500">Register</CardTitle>
           <CardTitle className="cursor-pointer text-xs text-slate-400 font-normal">
-            Need help ?
+            <a href="mailto:yakcekoce@gmail.com">Need help ?</a>
           </CardTitle>
         </CardHeader>
         <CardContent>

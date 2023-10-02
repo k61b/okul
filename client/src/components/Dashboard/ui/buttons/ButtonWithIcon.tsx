@@ -9,7 +9,8 @@ export default function ButtonWithIcon(props: {
   return (
     <>
       <Button className={props.classes}>
-        {props.icon} {props.label}
+        <div>{props.icon}</div>
+        <div>{props.label}</div>
       </Button>
     </>
   )
